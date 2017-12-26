@@ -51,6 +51,17 @@ elif args.bucket:
 		Prefix = ""
 		)
 
+	#
+	# TODO:
+	#
+	# https://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Paginator.ListObjectVersions
+	#
+	# - get pagination working: look at MaxItems, NextToken, and StartingToken
+	#
+	# - function: get latest version of each item (look at date since we have deleted items (get number of versions and total size)
+	# - funciton: get latest version of delete markers (look at date agani)
+	# - function: combine both of those dicts into a dict that includes status, number of versions, and total size
+	#
 	for item in response_iterator:
 
 		if "Versions" in item:		
@@ -63,13 +74,15 @@ elif args.bucket:
 
 		if "Versions" in item:
 			print("Versions")
-			print(json.dumps(item["Versions"], indent = 2))
+			#print(json.dumps(item["Versions"], indent = 2))
+			for row in item["Versions"]:
+				print(row["Key"])
 
 		if "DeleteMarkers" in item:
 			print("Delete Markers")
-			print(json.dumps(item["DeleteMarkers"], indent = 2))
-	
-
+			#print(json.dumps(item["DeleteMarkers"], indent = 2))
+			for row in item["DeleteMarkers"]:
+				print(row["Key"])
 
 
 
