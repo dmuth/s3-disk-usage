@@ -6,6 +6,7 @@
 #
 
 import argparse
+import json
 import logging
 import sys
 
@@ -19,7 +20,6 @@ logger = logging.getLogger()
 # Parse our arguments.
 #
 parser = argparse.ArgumentParser(description = "Explore versioned files in S3 buckets")
-parser.add_argument("--list-buckets", action = "store_true", help = "List buckets and exit")
 parser.add_argument("--bucket", help = "Bucket to operate on")
 parser.add_argument("--filter", help = "Filename text to filter on")
 
@@ -29,7 +29,7 @@ logger.info("Args: %s" % args)
 
 s3 = boto3.resource("s3")
 
-if args.list_buckets:
+if not args.bucket:
 
 	print("# ")
 	print("# Our list of buckets.")
@@ -39,15 +39,48 @@ if args.list_buckets:
 	for bucket in s3.buckets.all():
 		print(bucket.name)
 
+elif args.bucket:
+	name = args.bucket
+	logger.info("Exploring bucket '%s'..." % name)
+
+	client = boto3.client("s3")
+	paginator = client.get_paginator("list_object_versions")
+
+	response_iterator = paginator.paginate(
+		Bucket = name,
+		Prefix = ""
+		)
+
+	for item in response_iterator:
+
+		if "Versions" in item:		
+			for row in item["Versions"]:
+				row["LastModified"] = str(row["LastModified"])
+
+		if "DeleteMarkers" in item:
+			for row in item["DeleteMarkers"]:
+				row["LastModified"] = str(row["LastModified"])
+
+		if "Versions" in item:
+			print("Versions")
+			print(json.dumps(item["Versions"], indent = 2))
+
+		if "DeleteMarkers" in item:
+			print("Delete Markers")
+			print(json.dumps(item["DeleteMarkers"], indent = 2))
+	
+
+
+
+
 else:
 	print("! ")
-	print("! Please re-run this script with --list-buckets or --bucket")
+	print("! Please re-run this script with --bucket")
 	print("! ")
 	sys.exit(1)
 
 
 # TODO
-# Get versions
 # Check old versions
 # Check for deleted files
 # Sum up space used
