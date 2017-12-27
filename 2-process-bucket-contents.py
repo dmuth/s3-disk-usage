@@ -34,7 +34,7 @@ logger.info("Args: %s" % args)
 
 #
 # Go through our DeleteMarkers and return a data structure that's
-# distilled to just the key, date, and is_latest value
+# distilled to just the key and date
 #
 def processDeletes(data):
 
@@ -45,14 +45,14 @@ def processDeletes(data):
 		ret = {}
 
 		key = row["Key"]
-		is_latest = row["IsLatest"]
+		#is_latest = row["IsLatest"]
 		date = row["LastModified"]
 
 		if not key in retval:
 			#
 			# New marker, just drop in our data
 			#
-			ret["is_latest"] = is_latest
+			#ret["is_latest"] = is_latest
 			ret["latest_modified"] = date
 			retval[key] = ret
 
@@ -69,8 +69,8 @@ def processDeletes(data):
 
 
 #
-# Go through our Versiopns and return a data strucutre that's 
-# distilled to just the key, date, is_latest, 
+# Go through our Versions and return a data strucutre that's 
+# distilled to just the key, date, total and average sizes, and number of versions.
 #
 def processVersions(data):
 
@@ -116,6 +116,42 @@ def processVersions(data):
 
 
 #
+# Combine our Delete Markers and Versions into a single unified dictionary.
+#
+def combineDeletedAndVersions(delete_markers, versions):
+
+	retval = delete_markers
+
+	for key, row in versions.items():
+
+		if not key in retval:
+			#
+			# If the key wasn't in delete_markers, then
+			# the object must be prejsent.
+			#
+			retval[key] = row
+			retval[key]["status"] = "present"
+
+		else:
+			#
+			# Otherwise, we have to determine state by checking
+			# the most recently modified dates.  If the date
+			# deleted is more recently, then the current
+			# state is deleted, otherwise it's present.
+			#
+			date_deleted = delete_markers[key]["latest_modified"]
+			date_version = row["latest_modified"]
+			retval[key] = row
+
+			retval[key]["status"] = "present2"
+
+			if date_deleted > date_version:
+				retval[key]["status"] = "deleted"
+				retval[key]["last_modified"] = date_deleted
+
+	return(retval)
+
+#
 # Our main function, which reads from the input file, processes the data,
 # and prints the results.
 #
@@ -129,6 +165,10 @@ def main(input):
 
 		versions = processVersions(data["Versions"])
 		#print(json.dumps(versions, indent=2)) # Debugging
+
+	data = combineDeletedAndVersions(delete_markers, versions)
+	#print(json.dumps(data, indent=2)) # Debugging
+
 
 
 
