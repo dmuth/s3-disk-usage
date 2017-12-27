@@ -111,6 +111,20 @@ def processVersions(data):
 		num = row["num_versions"]
 		row["average_size"] = size / num
 
+	return(retval)
+
+
+#
+# Any object that is a folder ends in a slash. Check for that.
+#
+def isFolder(filename):
+
+	retval = False
+
+	index = len(filename) - 1
+
+	if filename[index] == "/":
+		retval = True
 
 	return(retval)
 
@@ -120,14 +134,17 @@ def processVersions(data):
 #
 def combineDeletedAndVersions(delete_markers, versions):
 
+	#
+	# Start by copying our Delete Markers into the data structure
+	#
 	retval = delete_markers
 
+	#
+	# Now go through our Versions, and merge them in.
+	#
 	for key, row in versions.items():
 
-		is_folder = False
-		index = len(key) - 1
-		if key[index] == "/":
-			is_folder = True
+		is_folder = isFolder(key)
 
 		if not key in retval:
 			#
@@ -156,6 +173,24 @@ def combineDeletedAndVersions(delete_markers, versions):
 
 		retval[key]["is_folder"] = is_folder
 
+
+	#
+	# Finally, go through our combined list of items, and if not found in
+	# versions, then only a delete marker was present.  
+	#
+	# As it turns out, that's totally possible, such as if the
+	# original version has aged out by policy or been deleted by hand.
+	#
+	# So anyway, when that's the case, we'll need to manually set 
+	# status, number of versions (1), size (0), etc.
+	#
+	for key, row in retval.items():
+		if key not in versions:
+			row["status"] = "deleted"
+			row["is_folder"] = isFolder(key)
+			row["total_size"] = 0
+			row["num_versions"] = 0
+
 	return(retval)
 
 
@@ -177,11 +212,13 @@ def getFileStats(data):
 	retval["deleted"]["average_size"] = 0
 
 	for key, row in data.items():
+
 		status = row["status"]
 
 		is_folder = row["is_folder"]
 		total_size = row["total_size"]
 		num_versions = row["num_versions"]
+
 
 		#
 		# Folders are essentially metadata and don't take up
