@@ -48,10 +48,22 @@ def processDeletes(data):
 		is_latest = row["IsLatest"]
 		date = row["LastModified"]
 
-		ret["is_latest"] = is_latest
-		ret["date"] = date
+		if not key in retval:
+			#
+			# New marker, just drop in our data
+			#
+			ret["is_latest"] = is_latest
+			ret["latest_modified"] = date
+			retval[key] = ret
 
-		retval[key] = ret
+		else:
+			#
+			# This file already has a delete marker, so
+			# check the date.
+			#
+			if date > retval[key]["latest_modified"]:
+				retval[key]["lastest_modified"] = date
+
 		
 	return(retval)
 
@@ -104,10 +116,11 @@ def main(input):
 		data = json.load(f)
 
 		delete_markers = processDeletes(data["DeleteMarkers"])
-		print(json.dumps(delete_markers, indent=2)) # Debugging
+		#print(json.dumps(delete_markers, indent=2)) # Debugging
 
 		versions = processVersions(data["Versions"])
 		#print(json.dumps(versions, indent=2))
+
 
 
 main(args.file)
