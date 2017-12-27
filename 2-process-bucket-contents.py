@@ -94,8 +94,8 @@ def processVersions(data):
 
 		else:
 			#
-			# We already processed this file, so update
-			# what we have and check the date.
+			# We already saw this filename, so update
+			# what we have with this version and check the date.
 			#
 			retval[key]["total_size"] += size
 			retval[key]["num_versions"] += 1
