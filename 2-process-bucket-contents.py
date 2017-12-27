@@ -109,7 +109,7 @@ def processVersions(data):
 	for key, row in retval.items():
 		size = row["total_size"]
 		num = row["num_versions"]
-		row["avg_size"] = size / num
+		row["average_size"] = size / num
 
 
 	return(retval)
@@ -123,6 +123,11 @@ def combineDeletedAndVersions(delete_markers, versions):
 	retval = delete_markers
 
 	for key, row in versions.items():
+
+		is_folder = False
+		index = len(key) - 1
+		if key[index] == "/":
+			is_folder = True
 
 		if not key in retval:
 			#
@@ -143,13 +148,68 @@ def combineDeletedAndVersions(delete_markers, versions):
 			date_version = row["latest_modified"]
 			retval[key] = row
 
-			retval[key]["status"] = "present2"
+			retval[key]["status"] = "present"
 
 			if date_deleted > date_version:
 				retval[key]["status"] = "deleted"
 				retval[key]["last_modified"] = date_deleted
 
+		retval[key]["is_folder"] = is_folder
+
 	return(retval)
+
+
+#
+# Go through our files and get stats
+#
+def getFileStats(data):
+
+	retval = {}
+	retval["present"] = {}
+	retval["present"]["num_files"] = 0
+	retval["present"]["num_versions"] = 0
+	retval["present"]["total_size"] = 0
+	retval["present"]["average_size"] = 0
+	retval["deleted"] = {}
+	retval["deleted"]["num_files"] = 0
+	retval["deleted"]["num_versions"] = 0
+	retval["deleted"]["total_size"] = 0
+	retval["deleted"]["average_size"] = 0
+
+	for key, row in data.items():
+		status = row["status"]
+
+		is_folder = row["is_folder"]
+		total_size = row["total_size"]
+		num_versions = row["num_versions"]
+
+		#
+		# Folders are essentially metadata and don't take up
+		# disk space, so don't bother with them.
+		#
+		if is_folder:
+			continue
+
+		if status == "present":
+			#print("PRESENT", key) # Debugging
+			retval["present"]["num_files"] += 1
+			retval["present"]["num_versions"] += row["num_versions"]
+			retval["present"]["total_size"] += row["total_size"]
+
+		elif status == "deleted":
+			#print("ABSENT", key) # Debugging
+			retval["deleted"]["num_files"] += 1
+			retval["deleted"]["num_versions"] += row["num_versions"]
+			retval["deleted"]["total_size"] += row["total_size"]
+
+		else:
+			raise Exception("Unknown status: %s" % status)
+
+	retval["present"]["average_size"] = retval["present"]["total_size"] / retval["present"]["num_versions"]
+	retval["deleted"]["average_size"] = retval["deleted"]["total_size"] / retval["deleted"]["num_versions"]
+
+	return(retval)
+
 
 #
 # Our main function, which reads from the input file, processes the data,
@@ -169,7 +229,8 @@ def main(input):
 	data = combineDeletedAndVersions(delete_markers, versions)
 	#print(json.dumps(data, indent=2)) # Debugging
 
-
+	stats = getFileStats(data)
+	print(json.dumps(stats, indent=2)) # Debugging
 
 
 main(args.file)
