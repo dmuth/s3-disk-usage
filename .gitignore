@@ -2,3 +2,6 @@
 # Vim
 *.swp
 
+# Don't include temp output files
+output.json
+
