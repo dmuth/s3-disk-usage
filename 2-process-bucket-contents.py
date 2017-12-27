@@ -103,6 +103,15 @@ def processVersions(data):
 			if date > retval[key]["latest_modified"]:
 				retval[key]["lastest_modified"] = date
 
+	#
+	# Now calulate average file size
+	#
+	for key, row in retval.items():
+		size = row["total_size"]
+		num = row["num_versions"]
+		row["avg_size"] = size / num
+
+
 	return(retval)
 
 
@@ -119,7 +128,7 @@ def main(input):
 		#print(json.dumps(delete_markers, indent=2)) # Debugging
 
 		versions = processVersions(data["Versions"])
-		#print(json.dumps(versions, indent=2))
+		#print(json.dumps(versions, indent=2)) # Debugging
 
 
 
