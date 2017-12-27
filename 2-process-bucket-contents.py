@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 
+import humanize
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(levelname)s: %(message)s')
 logger = logging.getLogger()
@@ -26,6 +27,7 @@ parser = argparse.ArgumentParser(description = "Get stats from files in an S3 bu
 # that one out.
 #
 parser.add_argument("file", nargs="?", help = "JSON file to load", default = "output.json")
+parser.add_argument("--humanize", action = "store_true", help = "Humanize output")
 #parser.add_argument("--filter", help = "Filename text to filter on")
 
 args = parser.parse_args()
@@ -244,6 +246,22 @@ def getFileStats(data):
 
 	retval["present"]["average_size"] = retval["present"]["total_size"] / retval["present"]["num_versions"]
 	retval["deleted"]["average_size"] = retval["deleted"]["total_size"] / retval["deleted"]["num_versions"]
+
+	#
+	# If we're humanizing, do that on our bytecounts and totals
+	#
+	if args.humanize:
+		for key, row in retval.items():
+			for key2, row2 in row.items():
+
+				if "_size" in key2:
+					row2 = humanize.naturalsize(row2, binary = True, gnu = True)
+					row[key2] = row2
+
+				elif "num_" in key2:
+					row2 = humanize.intcomma(row2)
+					row[key2] = row2
+
 
 	return(retval)
 
