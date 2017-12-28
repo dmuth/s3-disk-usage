@@ -256,8 +256,14 @@ def getFileStats(data):
 		else:
 			raise Exception("Unknown status: %s" % status)
 
-	retval["present"]["average_size"] = retval["present"]["total_size"] / retval["present"]["num_versions"]
-	retval["deleted"]["average_size"] = retval["deleted"]["total_size"] / retval["deleted"]["num_versions"]
+
+	retval["present"]["average_size"] = 0
+	if retval["present"]["num_versions"]:
+		retval["present"]["average_size"] = retval["present"]["total_size"] / retval["present"]["num_versions"]
+
+	retval["deleted"]["average_size"] = 0
+	if retval["deleted"]["num_versions"]:
+		retval["deleted"]["average_size"] = retval["deleted"]["total_size"] / retval["deleted"]["num_versions"]
 
 	return(retval)
 
