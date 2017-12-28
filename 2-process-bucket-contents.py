@@ -267,6 +267,9 @@ def getFileStats(data):
 #
 def printFileStats(stats):
 
+	present = stats["present"]
+	present["pct_used_by_latest"] = str(round(present["latest_size"] / present["total_size"] * 100, 2))
+
 	if not args.humanize:
 		print(json.dumps(stats, indent=2)) 
 
@@ -274,6 +277,9 @@ def printFileStats(stats):
 		#
 		# If we're humanizing, do that on our bytecounts and totals
 		#
+		present["pct_used_by_latest"] += "%"
+
+		format = "%10s: %20s: %s"
 		for key, row in stats.items():
 			for key2, row2 in row.items():
 
@@ -285,16 +291,18 @@ def printFileStats(stats):
 					row2 = humanize.intcomma(row2)
 					row[key2] = row2
 
-		print()
-
-		format = "%10s: %s: %s"
-		for key, row in stats["present"].items():
-			print(format % ("Present", key, row))
+		fields = ("num_files", "num_versions", "average_size", "latest_size", "total_size", "pct_used_by_latest")
 
 		print()
 
-		for key, row in stats["deleted"].items():
-			print(format % ("Deleted", key, row))
+		for key in fields:
+			print(format % ("Present", key, stats["present"][key]))
+
+		print()
+
+		for key in fields:
+			if key in stats["deleted"]:
+				print(format % ("Deleted", key, stats["deleted"][key]))
 
 		print()
 
