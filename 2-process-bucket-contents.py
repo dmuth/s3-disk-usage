@@ -105,8 +105,17 @@ def processVersions(data):
 			if date > retval[key]["latest_modified"]:
 				retval[key]["lastest_modified"] = date
 
+		#
+		# If this the latest version, this means this file
+		# is "showing", and let's note the size.
+		#
+		if (row["IsLatest"]):
+			if not isFolder(key):
+				retval[key]["latest_size"] = size
+
+
 	#
-	# Now calulate average file size
+	# Now calculate average file size
 	#
 	for key, row in retval.items():
 		size = row["total_size"]
@@ -192,6 +201,7 @@ def combineDeletedAndVersions(delete_markers, versions):
 			row["is_folder"] = isFolder(key)
 			row["total_size"] = 0
 			row["num_versions"] = 0
+		#print(key, row.get("latest_size"))
 
 	return(retval)
 
@@ -207,6 +217,7 @@ def getFileStats(data):
 	retval["present"]["num_versions"] = 0
 	retval["present"]["total_size"] = 0
 	retval["present"]["average_size"] = 0
+	retval["present"]["latest_size"] = 0
 	retval["deleted"] = {}
 	retval["deleted"]["num_files"] = 0
 	retval["deleted"]["num_versions"] = 0
@@ -234,6 +245,7 @@ def getFileStats(data):
 			retval["present"]["num_files"] += 1
 			retval["present"]["num_versions"] += row["num_versions"]
 			retval["present"]["total_size"] += row["total_size"]
+			retval["present"]["latest_size"] += row.get("latest_size")
 
 		elif status == "deleted":
 			#print("ABSENT", key) # Debugging
