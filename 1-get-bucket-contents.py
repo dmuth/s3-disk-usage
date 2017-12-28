@@ -26,12 +26,13 @@ logger = logging.getLogger()
 #
 parser = argparse.ArgumentParser(description = "Extract all versions of files in an S3 bucket")
 parser.add_argument("bucket")
+parser.add_argument("file", nargs="?", help = "JSON file to write (default: output.json)", default = "output.json")
 #parser.add_argument("--filter", help = "Filename text to filter on")
 
 args = parser.parse_args()
 logger.info("Args: %s" % args)
 
-output = "output.json"
+output = args.file
 
 bucket = args.bucket
 cmd = "aws s3api list-object-versions --bucket %s" % bucket
