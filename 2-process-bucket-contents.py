@@ -247,11 +247,23 @@ def getFileStats(data):
 	retval["present"]["average_size"] = retval["present"]["total_size"] / retval["present"]["num_versions"]
 	retval["deleted"]["average_size"] = retval["deleted"]["total_size"] / retval["deleted"]["num_versions"]
 
+	return(retval)
+
+
+#
+# Print up our file stats.
+#
+def printFileStats(stats):
+
+
 	#
 	# If we're humanizing, do that on our bytecounts and totals
 	#
-	if args.humanize:
-		for key, row in retval.items():
+	if not args.humanize:
+		print(json.dumps(stats, indent=2)) 
+
+	else:
+		for key, row in stats.items():
 			for key2, row2 in row.items():
 
 				if "_size" in key2:
@@ -262,8 +274,16 @@ def getFileStats(data):
 					row2 = humanize.intcomma(row2)
 					row[key2] = row2
 
+		format = "%10s: %s: %s"
+		for key, row in stats["present"].items():
+			print(format % ("Present", key, row))
 
-	return(retval)
+		print()
+
+		for key, row in stats["deleted"].items():
+			print(format % ("Deleted", key, row))
+
+
 
 
 #
@@ -285,7 +305,7 @@ def main(input):
 	#print(json.dumps(data, indent=2)) # Debugging
 
 	stats = getFileStats(data)
-	print(json.dumps(stats, indent=2)) # Debugging
+	printFileStats(stats)
 
 
 main(args.file)
