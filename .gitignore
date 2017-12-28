@@ -3,7 +3,7 @@
 *.swp
 
 # Don't include temp output files
-output.json*
+*.json
 tmp-*
 
 # To create the virutal env in Python 3: python3 -m venv /path/to/new/virtual/environment
