@@ -13,8 +13,13 @@ This will report on total use across all versions of a file.
 
 ## Prerequisites
 
+You will need to create an account in <a href="https://aws.amazon.com/iam/">AWS IAM</a> that
+has read-only access to Amazon S3.  The permissions on that account should look something like this:
 
+<img src="./img/aws-iam-policy.png" />
 
+Then run `aws configure` from the command line, enter your credentials, and verify
+that `aws s3 ls` works.
 
 
 ## Usage 
