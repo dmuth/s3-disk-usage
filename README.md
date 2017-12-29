@@ -58,7 +58,20 @@ will get lovely human-readable output.
 
 ## Under The Hood
 
+I originally planned to do this all using <a href="https://boto3.readthedocs.io/en/latest/">Boto 3</a>,
+and since I wanted all versions of files, it meant I would have have to use 
+<a href="https://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Paginator.ListObjectsV2">S3.Paginator.ListObjectsV2</a>
+to get that data.  Unfortunately, I found what appears to be a bug: the `NextToken` value was not being 
+populated, which means I couldn't fetch more than a single batch of file data.
 
+I did some more research, and discovered that the AWS CLI has a mode called "s3api", which lets you 
+use lower-level S3 API functions.  In my case, the command `aws s3api list-object-versions --bucket`
+turned out to be useful, as it returns JSON of all versions and all delete markers.  From there,
+my script goes through both data structures, determines the current status of a file (deleted or present),
+updates a stats data structure on that bucket (including total bytes used across older/deleted versions of a file),
+and writes out the bucket stats at the end of the run.
+
+  
 
 
 
