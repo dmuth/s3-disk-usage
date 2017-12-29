@@ -274,7 +274,9 @@ def getFileStats(data):
 def printFileStats(stats):
 
 	present = stats["present"]
-	present["pct_used_by_latest"] = str(round(present["latest_size"] / present["total_size"] * 100, 2))
+	present["pct_used_by_latest"] = "0"
+	if present["total_size"]:
+		present["pct_used_by_latest"] = str(round(present["latest_size"] / present["total_size"] * 100, 2))
 
 	if not args.humanize:
 		print(json.dumps(stats, indent=2)) 
