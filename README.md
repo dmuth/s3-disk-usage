@@ -86,19 +86,6 @@ and writes out the bucket stats at the end of the run.
 If you have a bug or a feature request or just wasnt to drop me a line, feel free to add an issue to this project.
 
 I am also <a href="http://twitter.com/dmuth">@dmuth on Twitter</a>
-<a href="http://www.facebook.com/dmuth">as well as on Facebook</a>, and can be reached
+as well as <a href="http://www.facebook.com/dmuth">on Facebook</a>, and can be reached
 via email to <b>dmuth AT dmuth DOT org</b>.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
