@@ -37,6 +37,15 @@ As you can see, usage the bucket is reasonable, but there were over 200 GB of de
 files present.  (As it turned out, there was a bucket policy that retained old/deleted versions 
 for 365 days--oops!)
 
+#### Report on all buckets
+
+Here's how to get statistics on all of your buckets:
+
+`for BUCKET in $(aws s3 ls |awk '{print $3}' ); do ./go.sh $BUCKET; done |tee output.txt`
+
+This will run statistics for each bucket and write the results to the file `output.txt`.
+
+
 ### More Detailed Usage
 
 There are two core Python scripts: one to download the bucket contents, and one to
