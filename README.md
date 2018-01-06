@@ -74,7 +74,7 @@ to get that data.  Unfortunately, I found what appears to be a bug: the `NextTok
 populated, which means I couldn't fetch more than a single batch of file data.
 
 I did some more research, and discovered that the AWS CLI has a mode called "s3api", which lets you 
-use lower-level S3 API functions.  In my case, the command `aws s3api list-object-versions --bucket`
+use lower-level S3 API functions.  In my case, the command `aws s3api list-object-versions --bucket BUCKET_NAME`
 turned out to be useful, as it returns JSON of all versions and all delete markers.  From there,
 my script goes through both data structures, determines the current status of a file (deleted or present),
 updates a stats data structure on that bucket (including total bytes used across older/deleted versions of a file),
