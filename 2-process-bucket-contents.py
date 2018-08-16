@@ -324,9 +324,12 @@ def main(input):
 
 	with open(input) as f:
 		data = json.load(f)
+		#print("Debug Data:", json.dumps(data, indent = 4, sort_keys = True)) # Debugging
 
-		delete_markers = processDeletes(data["DeleteMarkers"])
-		#print(json.dumps(delete_markers, indent=2)) # Debugging
+		delete_markers = {}
+		if "DeleteMarkers" in data:
+			delete_markers = processDeletes(data["DeleteMarkers"])
+		#print("Debug delete markers:", json.dumps(delete_markers, indent=2)) # Debugging
 
 		versions = processVersions(data["Versions"])
 		#print(json.dumps(versions, indent=2)) # Debugging
