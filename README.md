@@ -10,6 +10,8 @@ versions of a file or if there are many deleted files.
 
 This will report on total use across all versions of a file.
 
+I have a further writeup on why I did this <a href="https://www.dmuth.org/whats-taking-up-so-much-space-in-aws-s3/">on my blog</a>.
+
 
 ## Prerequisites
 
