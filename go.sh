@@ -58,15 +58,16 @@ OUTPUT="$BUCKET.json"
 #
 if test -f "$OUTPUT"
 then
-	echo "# "
-	echo "# Output file '$OUTPUT' already exists, skipping!"
-	echo "# "
+	echo "# " 1>&2
+	echo "# Output file '$OUTPUT' already exists, skipping!" 1>&2
+	echo "# " 1>&2
 
 else 
 	./1-get-bucket-contents.py $BUCKET $OUTPUT
 
 fi
 
-./2-process-bucket-contents.py $OUTPUT --humanize
+#./2-process-bucket-contents.py $OUTPUT --humanize
+./2-process-bucket-contents.py $OUTPUT 
 
 
