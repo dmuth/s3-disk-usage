@@ -305,6 +305,12 @@ def printFileStats(stats):
 
 		stats[key] = row_new
 
+	#
+	# Get the name of the bucket from the filename add it into the stats.
+	#
+	bucket = os.path.splitext(args.file)[0]
+	stats["bucket"] = bucket
+
 	if not args.humanize:
 		print(json.dumps(stats, indent=2, sort_keys = True)) 
 
