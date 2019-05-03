@@ -278,26 +278,41 @@ def printFileStats(stats):
 	if present["total_size"]:
 		present["pct_used_by_latest"] = str(round(present["latest_size"] / present["total_size"] * 100, 2))
 
+	#
+	# Go through our stats and make human-readable verions of all numerical values
+	# and byte counts.
+	#
+	format = "%10s: %20s: %s"
+
+	for key, row in stats.items():
+
+		row_new = {}
+
+		for key2, row2 in row.items():
+
+			if "_size" in key2:
+				row_new[key2] = row2
+				row2 = humanize.naturalsize(row2, binary = True, gnu = True)
+				row_new[key2 + "_human"] = row2
+
+			elif "num_" in key2:
+				row_new[key2] = row2
+				row2 = humanize.intcomma(row2)
+				row_new[key2 + "_human"] = row2
+
+			else:
+				row_new[key2] = row2
+
+		stats[key] = row_new
+
 	if not args.humanize:
-		print(json.dumps(stats, indent=2)) 
+		print(json.dumps(stats, indent=2, sort_keys = True)) 
 
 	else:
 		#
 		# If we're humanizing, do that on our bytecounts and totals
 		#
 		present["pct_used_by_latest"] += "%"
-
-		format = "%10s: %20s: %s"
-		for key, row in stats.items():
-			for key2, row2 in row.items():
-
-				if "_size" in key2:
-					row2 = humanize.naturalsize(row2, binary = True, gnu = True)
-					row[key2] = row2
-
-				elif "num_" in key2:
-					row2 = humanize.intcomma(row2)
-					row[key2] = row2
 
 		fields = ("num_files", "num_versions", "average_size", "latest_size", "total_size", "pct_used_by_latest")
 
