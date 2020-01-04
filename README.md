@@ -28,7 +28,10 @@ that `aws s3 ls` works.
 
 ### Quick and Dirty Version
 
-Run `./go.sh bucketname`.
+- Clone this repo
+- Run `pip3 install -r ./requirements.txt` to install the required Python modules
+- Run `./go.sh bucketname`
+
 
 That will download a listing of all versions and all deleted files in a bucket and print out 
 a nice human-readable display that looks something like this:
