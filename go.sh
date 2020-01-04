@@ -67,7 +67,7 @@ else
 
 fi
 
-#./2-process-bucket-contents.py $OUTPUT --humanize
-./2-process-bucket-contents.py $OUTPUT 
+./2-process-bucket-contents.py $OUTPUT --humanize
+#./2-process-bucket-contents.py $OUTPUT 
 
 
