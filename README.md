@@ -30,7 +30,8 @@ that `aws s3 ls` works.
 
 - Clone this repo
 - Run `pip3 install -r ./requirements.txt` to install the required Python modules
-- Run `./go.sh bucketname`
+- Run `./go.sh bucketname` to get stats on a single bucket
+- Run `./go-all-s3-buckets.sh` to get stats on all buckets
 
 
 That will download a listing of all versions and all deleted files in a bucket and print out 
@@ -41,14 +42,6 @@ a nice human-readable display that looks something like this:
 As you can see, usage the bucket is reasonable, but there were over 200 GB of deleted
 files present.  (As it turned out, there was a bucket policy that retained old/deleted versions 
 for 365 days--oops!)
-
-#### Report on all buckets
-
-Here's how to get statistics on all of your buckets:
-
-`for BUCKET in $(aws s3 ls |awk '{print $3}' ); do ./go.sh $BUCKET; done |tee output.txt`
-
-This will run statistics for each bucket and write the results to the file `output.txt`.
 
 
 ### More Detailed Usage
