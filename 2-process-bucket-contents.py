@@ -320,7 +320,7 @@ def printFileStats(stats):
 		#
 		present["pct_used_by_latest"] += "%"
 
-		fields = ("num_files", "num_versions", "average_size", "latest_size", "total_size", "pct_used_by_latest")
+		fields = ("num_files", "num_versions", "average_size_human", "latest_size_human", "total_size_human", "pct_used_by_latest")
 
 		print()
 
@@ -345,6 +345,7 @@ def main(input):
 
 	with open(input) as f:
 		data = json.load(f)
+
 		#print("Debug Data:", json.dumps(data, indent = 4, sort_keys = True)) # Debugging
 
 		delete_markers = {}
@@ -362,7 +363,9 @@ def main(input):
 	printFileStats(stats)
 
 
-main(args.file)
-
+try:
+	main(args.file)
+except json.decoder.JSONDecodeError:
+	logger.warning("Could not read valid JSON from %s" % args.file)
 
 
