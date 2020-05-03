@@ -324,6 +324,11 @@ def printFileStats(stats):
 
 		print()
 
+		format_bucket = "%10s: %21s %s"
+		print(format_bucket % ("Bucket", "", stats["bucket"]))
+
+		print()
+
 		for key in fields:
 			print(format % ("Present", key, stats["present"][key]))
 
